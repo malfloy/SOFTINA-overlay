@@ -86,6 +86,8 @@ public class OverlayService extends Service {
         return lp;
     }
 
+    private int dp(float v) { return (int)(v * density + 0.5f); }
+
     private int type() {
         return android.os.Build.VERSION.SDK_INT >= 26
             ? android.view.WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY : 2003;
@@ -237,7 +239,41 @@ public class OverlayService extends Service {
         super.onDestroy();
     }
 
-    private void addEsp() {    private void notifyStart() {
+    private void addEsp() {
+        espView = new View(this) {
+            @Override public void draw(Canvas c) {
+                super.draw(c);
+                if (panelUI == null || state.espData == null) return;
+                SoftEngine.EspData d = state.espData;
+                if (!panelUI.st.enabled) return;
+                android.graphics.Paint p = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
+                p.setStyle(android.graphics.Paint.Style.STROKE);
+                p.setStrokeWidth(dp(1.6f));
+                int n = d.box.length / 5;
+                for (int i = 0; i < n; i++) {
+                    float x = d.box[i * 5], y = d.box[i * 5 + 1];
+                    float bw = d.box[i * 5 + 2], bh = d.box[i * 5 + 3];
+                    float hp = d.box[i * 5 + 4];
+                    if (bw <= 0 || bh <= 0) continue;
+                    p.setColor(ColorBox.hsl(hp));
+                    c.drawRect(x, y, x + bw, y + bh, p);
+                    p.setStyle(android.graphics.Paint.Style.FILL);
+                    c.drawRect(x + bw + dp(2), y + bh * (1 - hp), x + bw + dp(5), y + bh, p);
+                    p.setStyle(android.graphics.Paint.Style.STROKE);
+                }
+                if (panelUI.st.tracers) {
+                    p.setStrokeWidth(dp(1.2f));
+                    p.setColor(0x40FFFFFF);
+                    int nt = d.tracer.length / 4;
+                    for (int i = 0; i < nt; i++)
+                        c.drawLine(d.tracer[i * 4], d.tracer[i * 4 + 1], d.tracer[i * 4 + 2], d.tracer[i * 4 + 3], p);
+                }
+            }
+        };
+        wm.addView(espView, espLp);
+    }
+
+    private void notifyStart() {
         android.app.NotificationChannel ch = new android.app.NotificationChannel("softina", "SOFTINA overlay",
             android.app.NotificationManager.IMPORTANCE_LOW);
         ((android.app.NotificationManager) getSystemService(NOTIFICATION_SERVICE)).createNotificationChannel(ch);
