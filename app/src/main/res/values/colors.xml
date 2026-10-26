@@ -1,0 +1,9 @@
+<resources>
+  <color name="accent">#7C5CFF</color>
+  <color name="accent_dark">#5b41cc</color>
+  <color name="bg_deep">#0B0C14</color>
+  <color name="panel_dark">#161825F2</color>
+  <color name="text_primary">#F2F3FF</color>
+  <color name="text_secondary">#9A9FB8</color>
+  <color name="ic_launcher_background">#7C5CFF</color>
+</resources>
