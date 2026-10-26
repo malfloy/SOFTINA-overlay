@@ -135,6 +135,9 @@ public class MainActivity extends Activity {
     }
 
     private int dp(int v) { return (int)(v * getResources().getDisplayMetrics().density + 0.5f); }
+    private static LinearLayout.LayoutParams lp(int w, int h) {
+        return lp(w, h, 0, 0, 0);
+    }
     private static LinearLayout.LayoutParams lp(int w, int h, int mt, int ml, int extra) {
         LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(w, h);
         if (mt > 0) p.topMargin = mt;
