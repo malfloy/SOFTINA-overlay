@@ -30,11 +30,11 @@ public class OverlayService extends Service {
     private boolean panelShown = false;
 
     private final SoftPanelUI.Delegate delegate = new SoftPanelUI.Delegate() {
-        @Override public StateModel state() { return panelUI.st; }
-        @Override public void onTab(int tab) { panelUI.st.tab = tab; redrawPanel(); }
+        @Override public StateModel state() { return state; }
+        @Override public void onTab(int tab) { state.tab = tab; redrawPanel(); }
         @Override public void onToggle(String key) {
-            panelUI.st.flip(key);
-            engine.sendState(panelUI.st.toJson());
+            state.flip(key);
+            engine.sendState(state.toJson());
             redrawPanel();
             redrawEsp();
         }
@@ -67,7 +67,7 @@ public class OverlayService extends Service {
         addEsp();
         engine.listener = new SoftEngine.EspListener() {
             @Override public void onFrame(SoftEngine.EspData d) { state.espData = d; redrawEsp(); }
-            @Override public void onStatus(String s) { panelUI.st.status = s; redrawPanel(); }
+            @Override public void onStatus(String s) { state.status = s; redrawPanel(); }
         };
         engine.start(this);
     }
@@ -152,7 +152,7 @@ public class OverlayService extends Service {
                 super.draw(c);
                 if (panelUI == null || state.espData == null) return;
                 SoftEngine.EspData d = state.espData;
-                if (!panelUI.st.enabled) return;
+                if (!state.enabled) return;
                 android.graphics.Paint p = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
                 p.setStyle(android.graphics.Paint.Style.STROKE);
                 p.setStrokeWidth(dp(1.6f));
@@ -169,7 +169,7 @@ public class OverlayService extends Service {
                     c.drawRect(x + bw + dp(2), y + bh * (1 - hp), x + bw + dp(5), y + bh, p);
                     p.setStyle(android.graphics.Paint.Style.STROKE);
                 }
-                if (panelUI.st.tracers) {
+                if (state.tracers) {
                     p.setStrokeWidth(dp(1.2f));
                     p.setColor(0x40FFFFFF);
                     int nt = d.tracer.length / 4;
@@ -205,7 +205,7 @@ public class OverlayService extends Service {
             panelView.setAlpha(0);
             wm.addView(panelView, panelLp);
             ui.postDelayed(panelPulse, 30);
-            engine.sendState(panelUI.st.toJson());
+            engine.sendState(state.toJson());
         } else if (!on && panelView != null) {
             wm.removeView(panelView);
             panelView = null;
@@ -237,23 +237,5 @@ public class OverlayService extends Service {
         }
         bubbleView = panelView = espView = null;
         super.onDestroy();
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        notifyStart();
-    }
-
-    private void notifyStart() {
-        android.app.NotificationChannel ch = new android.app.NotificationChannel("softina", "SOFTINA overlay",
-            android.app.NotificationManager.IMPORTANCE_LOW);
-        ((android.app.NotificationManager) getSystemService(NOTIFICATION_SERVICE)).createNotificationChannel(ch);
-        android.app.Notification n = new android.app.Notification.Builder(this, "softina")
-            .setContentTitle("SOFTINA активна")
-            .setContentText("Оверлей работает")
-            .setSmallIcon(android.R.drawable.ic_menu_view)
-            .setOngoing(true).build();
-        startForeground(1, n);
     }
 }

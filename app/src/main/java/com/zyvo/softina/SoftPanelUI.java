@@ -30,6 +30,13 @@ public class SoftPanelUI {
     private static final int TXT_2  = 0xFF9AA0BC;
     private static final String[] TABS = {"VISUALS", "MOVEMENT", "DANGER"};
 
+    /** цвет с новым альфа-каналом */
+    static int putA(int color, float alpha) {
+        int a = (int) alpha;
+        if (a < 0) a = 0; if (a > 255) a = 255;
+        return (a << 24) | (color & 0xFFFFFF);
+    }
+
     // вычисленные hit-зоны (в координатах вью)
     private final RectF hzClose = new RectF();
     private final RectF[] hzTab = { new RectF(), new RectF(), new RectF() };

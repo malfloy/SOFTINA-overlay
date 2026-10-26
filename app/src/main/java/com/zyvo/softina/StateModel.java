@@ -7,6 +7,7 @@ public class StateModel {
     public boolean fly = false, noclip = false, god = false;
     public String status = "Ожидаю данные от инжекта…";
     public String footer = "root · подключение к игре";
+    public SoftEngine.EspData espData;
 
     public boolean flag(String key) {
         switch (key) {
