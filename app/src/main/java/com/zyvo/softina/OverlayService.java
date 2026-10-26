@@ -55,7 +55,6 @@ public class OverlayService extends Service {
         // уведомление foreground — сервис живёт поверх всего
         // (канал создаётся лениво в notifyStart())
         notifyStart();
-
         bubbleLp = params(dp(46), dp(46), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, dp(160));
         panelLp = params(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
             Gravity.TOP | Gravity.START, dp(60), dp(140));
@@ -237,5 +236,17 @@ public class OverlayService extends Service {
         }
         bubbleView = panelView = espView = null;
         super.onDestroy();
+    }
+
+    private void notifyStart() {
+        android.app.NotificationChannel ch = new android.app.NotificationChannel("softina", "SOFTINA overlay",
+            android.app.NotificationManager.IMPORTANCE_LOW);
+        ((android.app.NotificationManager) getSystemService(NOTIFICATION_SERVICE)).createNotificationChannel(ch);
+        android.app.Notification n = new android.app.Notification.Builder(this, "softina")
+            .setContentTitle("SOFTINA активна")
+            .setContentText("Оверлей работает")
+            .setSmallIcon(android.R.drawable.ic_menu_view)
+            .setOngoing(true).build();
+        startForeground(1, n);
     }
 }

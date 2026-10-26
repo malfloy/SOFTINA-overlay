@@ -85,8 +85,9 @@ public class SoftPanelUI {
         final float th = 52 * S;
 
         // верхний градиент
-        LinearGradient top = new LinearGradient(0, 0, w, th,
-            putA(ACCENT, 46 * e), putA(ACCENT, 0), Shader.TileMode.CLAMP);
+        Paint top = new Paint(Paint.ANTI_ALIAS_FLAG);
+        top.setShader(new LinearGradient(0, 0, w, th,
+            putA(ACCENT, 46 * e), putA(ACCENT, 0), Shader.TileMode.CLAMP));
         c.save(); c.clipRect(0, 0, w, th); c.drawPaint(top); c.restore();
 
         // заголовок
