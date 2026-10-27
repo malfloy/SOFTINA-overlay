@@ -31,6 +31,9 @@ public class MainActivity extends Activity {
         root.setPadding(dp(24), dp(40), dp(24), dp(24));
         root.setBackgroundColor(0xFF0B0C14);
 
+        // пустой распор: прижимаем карточки и кнопки к низу экрана
+        root.addView(new View(this), new LinearLayout.LayoutParams(-2, 0, 1f));
+
         TextView logo = new TextView(this);
         logo.setText("SOFTINA");
         logo.setTextSize(34f);
@@ -49,7 +52,6 @@ public class MainActivity extends Activity {
         
         cards.setPadding(dp(16), dp(16), dp(16), dp(16));
         root.addView(cards, lp(-1, -2, 0, 24, 0));
-
         statusView = new TextView(this);
         statusView.setTextSize(14f);
         statusView.setTextColor(0xFFF2F3FF);
@@ -102,7 +104,7 @@ public class MainActivity extends Activity {
         statusView.setText((root ? "● " : "○ ") + "Root: " + (root ? "OK" : "нет")
             + "\n● Оверлей: " + (overlay ? "разрешён" : "не разрешён")
             + "\n● BERDA: " + (game ? "установлена" : "нет"));
-        startBtn.setEnabled(root && overlay && game);
+        startBtn.setEnabled(true);
     }
 
     private boolean checkRoot() {

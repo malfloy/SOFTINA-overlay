@@ -61,6 +61,33 @@ public class SoftEngine {
         if (tailProc != null) { tailProc.destroy(); tailProc = null; }
     }
 
+    public interface InjectCb { void done(String result); }
+
+    /** ptrace-инжект libbasemenu.so в запущенный BERDA (wrap-prop не трогаем). */
+    public void runInject(final InjectCb cb) {
+        new Thread(() -> {
+            String out = shOut("sh /data/local/tmp/soft_inject.sh 2>&1").trim();
+            if (out.isEmpty()) out = "нет ответа от su";
+            final String f = out;
+            ui.post(() -> cb.done(f));
+        }, "softina-inject").start();
+    }
+
+    private String shOut(String cmd) {
+        try {
+            Process p = Runtime.getRuntime().exec(new String[]{"su", "-c", cmd});
+            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            StringBuilder b = new StringBuilder();
+            String l;
+            while ((l = r.readLine()) != null) b.append(l).append('\n');
+            p.waitFor();
+            r.close();
+            return b.toString();
+        } catch (Exception e) {
+            return "su error: " + e.getMessage();
+        }
+    }
+
     /** Команда от UI: записать JSON в cmd-файл игры. */
     public void sendState(String json) {
         final String sj = json;

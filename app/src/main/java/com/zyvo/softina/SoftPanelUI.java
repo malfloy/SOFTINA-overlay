@@ -147,6 +147,7 @@ public class SoftPanelUI {
             cy = section(c, "ДИАГНОСТИКА", cy, contentX, contentW, e);
             drawText(c, contentX + 12 * S, cy + 15 * S, s.status, 10.5f * S, putA(TXT_2, 235 * e), false, false);
             cy += 30 * S;
+            cy = buttonRow(c, "ИНЖЕКТ В ИГРУ", "inject", cy, contentX, contentW, e);
             cy = buttonRow(c, "ПРОВЕРИТЬ СВЯЗЬ", "send", cy, contentX, contentW, e);
         }
 

@@ -33,6 +33,23 @@ public class OverlayService extends Service {
         @Override public StateModel state() { return state; }
         @Override public void onTab(int tab) { state.tab = tab; redrawPanel(); }
         @Override public void onToggle(String key) {
+            if ("send".equals(key)) {
+                state.status = "Ping послан…";
+                engine.sendState(SoftEngine.statusOnce(this));
+                redrawPanel();
+                return;
+            }
+            if ("inject".equals(key)) {
+                state.status = "Инжект: старт…";
+                redrawPanel();
+                engine.runInject(new SoftEngine.InjectCb() {
+                    @Override public void done(String result) {
+                        state.status = "Инжект: " + result;
+                        redrawPanel();
+                    }
+                });
+                return;
+            }
             state.flip(key);
             engine.sendState(state.toJson());
             redrawPanel();
@@ -121,7 +138,13 @@ public class OverlayService extends Service {
                     case MotionEvent.ACTION_MOVE: {
                         float nx = e.getRawX() - downX, ny = e.getRawY() - downY;
                         if (Math.abs(nx) > dp(8) || Math.abs(ny) > dp(8)) moved = true;
-                        if (moved) { bubbleLp.x = (int)(dx + nx); bubbleLp.y = (int)(dy + ny); wm.updateViewLayout(v, bubbleLp); }
+                        if (moved) {
+                            bubbleLp.x = (int)(dx + nx);
+                            // гравитация BOTTOM: ось y у окна направлена снизу вверх,
+                            // поэтому инвертируем знак — и тяня пальцем, двигаем бабл в ту же сторону
+                            bubbleLp.y = (int)(dy - ny);
+                            wm.updateViewLayout(v, bubbleLp);
+                        }
                         break;
                     }
                     case MotionEvent.ACTION_UP:
