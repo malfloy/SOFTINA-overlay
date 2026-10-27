@@ -35,7 +35,7 @@ public class OverlayService extends Service {
         @Override public void onToggle(String key) {
             if ("send".equals(key)) {
                 state.status = "Ping послан…";
-                engine.sendState(SoftEngine.statusOnce(this));
+                engine.sendState(SoftEngine.statusOnce(OverlayService.this));
                 redrawPanel();
                 return;
             }
