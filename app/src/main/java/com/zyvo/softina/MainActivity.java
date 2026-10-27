@@ -110,12 +110,17 @@ public class MainActivity extends Activity {
 
     private boolean checkRoot() {
         try {
-            Process p = Runtime.getRuntime().exec("su -c id");
-            java.util.Scanner s = new java.util.Scanner(p.getInputStream());
-            boolean ok = s.findInLine("uid=0") != null;
-            s.close();
-            p.waitFor();
-            return ok;
+            // su сначала может молча не ответить — шлём три попытки с таймаутом
+            for (int i = 0; i < 3; i++) {
+                Process p = Runtime.getRuntime().exec(new String[]{"su", "-c", "id"});
+                java.util.Scanner s = new java.util.Scanner(p.getInputStream());
+                boolean ok = s.findInLine("uid=0") != null;
+                s.close();
+                p.waitFor();
+                if (ok) return true;
+                Thread.sleep(300);
+            }
+            return false;
         } catch (Exception e) { return false; }
     }
 
